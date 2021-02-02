@@ -42,6 +42,7 @@ const DriverCard = ({ driver }) => {
 };
 
 const Wrapper = styled.article`
+  background-color: white;
   letter-spacing: 0.1rem;
   border-radius: 0.3rem;
   border: 1px solid rgba(0, 0, 0, 0.1);
