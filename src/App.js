@@ -1,25 +1,29 @@
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import "./styles/globals.css";
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import Footer from "./components/Footer";
+import Navbar from "./components/Navbar";
+import Layout from "./layout/Layout";
+import HomePage from "./pages/HomePage";
+import DriverList from "./components/DriverList";
+import CircuitList from "./components/CircuitList";
+import SeasonList from "./components/SeasonList";
 
-function App() {
+const App = () => {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <Layout>
+        <Navbar />
+        <Switch>
+          <Route exact path="/" component={HomePage}></Route>
+          <Route exact path="/seasons" component={SeasonList}></Route>
+          <Route exact path="/drivers" component={DriverList}></Route>
+          <Route exact path="/circuits" component={CircuitList}></Route>
+        </Switch>
+        <Footer />
+      </Layout>
+    </Router>
   );
-}
+};
 
 export default App;
