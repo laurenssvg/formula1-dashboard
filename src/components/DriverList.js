@@ -1,25 +1,38 @@
 import React, { useState, useEffect } from "react";
+import {
+  KeyboardArrowDownRounded,
+  KeyboardArrowUpRounded,
+} from "@material-ui/icons";
 import styled from "styled-components";
 import DriverCard from "./DriverCard";
 
-const orderBy = (drivers, value) => {
-  if (value === "age") {
-    return [...drivers].sort(
-      (a, b) => parseFloat(a.dateOfBirth) - parseFloat(b.dateOfBirth)
-    );
+const orderBy = (drivers, value, direction) => {
+  if (direction === "asc") {
+    return [...drivers].sort((a, b) => (a[value] > b[value] ? 1 : -1));
   }
-  if (value === "name") {
-    return [...drivers].sort((a, b) => {
-      if (a.familyName < b.familyName) {
-        return -1;
-      }
-      if (a.familyName > b.familyName) {
-        return 1;
-      }
-      return 0;
-    });
+  if (direction === "desc") {
+    return [...drivers].sort((a, b) => (a[value] > b[value] ? -1 : 1));
   }
   return drivers;
+};
+
+const SortArrow = ({ direction }) => {
+  if (!direction) {
+    return <></>;
+  }
+  if (direction === "desc") {
+    return (
+      <div>
+        <KeyboardArrowUpRounded color="inherit" />
+      </div>
+    );
+  } else {
+    return (
+      <div>
+        <KeyboardArrowDownRounded color="inherit" />
+      </div>
+    );
+  }
 };
 
 const DriverList = () => {
@@ -27,6 +40,7 @@ const DriverList = () => {
   const [season, setSeason] = useState(null);
   const [loading, setLoading] = useState(false);
   const [value, setValue] = useState("");
+  const [direction, setDirection] = useState();
 
   useEffect(() => {
     const fetchDrivers = async () => {
@@ -44,26 +58,45 @@ const DriverList = () => {
     fetchDrivers();
   }, []);
 
-  const onInputChange = (e) => {
-    setValue(e.target.value);
+  const onInputChange = (value) => {
+    switchDirection();
+    setValue(value);
   };
 
-  const orderedDrivers = orderBy(drivers, value);
+  const switchDirection = () => {
+    if (!direction) {
+      setDirection("desc");
+    } else if (direction === "desc") {
+      setDirection("asc");
+    } else {
+      setDirection(null);
+    }
+  };
+
+  const orderedDrivers = orderBy(drivers, value, direction);
 
   return (
     <Wrapper>
       <div className="drivers_header">
         <div className="season">Drivers {season}</div>
         <div className="order-by">
-          <p>Order by:</p>
-          <select
-            className="select"
-            onChange={onInputChange}
-            placeholder="Sort by.."
-          >
-            <option value="name">Name</option>
-            <option value="age">Age</option>
-          </select>
+          <div className="order-by-text">Order by:</div>
+          <div className="buttons">
+            <button
+              onClick={() => onInputChange("familyName")}
+              className="button_name"
+            >
+              <div>Name</div>
+              {value === "familyName" && <SortArrow direction={direction} />}
+            </button>
+            <button
+              onClick={() => onInputChange("dateOfBirth")}
+              className="button_age"
+            >
+              <div>Age</div>
+              {value === "dateOfBirth" && <SortArrow direction={direction} />}
+            </button>
+          </div>
         </div>
       </div>
       {!loading ? (
@@ -105,12 +138,63 @@ const Wrapper = styled.section`
   }
 
   .order-by {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
   }
 
-  .select {
-    background: transparent;
+  .order-by-text {
+    flex: 1;
+  }
+
+  .order-by button {
+    outline: none;
+  }
+
+  .buttons {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .button_name {
+    text-transform: uppercase;
+    background: white;
+    color: black;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    border-radius: var(--radius);
+    border-color: transparent;
+    cursor: pointer;
+    padding: 0.375rem 0.75rem;
+    width: 80px;
+    height: 50px;
+    display: flex;
+    flex-direction: row;
+    place-items: center;
+  }
+
+  .button_age {
+    text-transform: uppercase;
+    background: white;
+    color: black;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    border-radius: var(--radius);
+    border-color: transparent;
+    cursor: pointer;
+    padding: 0.375rem 0.75rem;
+    width: 80px;
+    height: 50px;
+    display: flex;
+    flex-direction: row;
+    place-items: center;
+  }
+
+  .button_name:hover {
+    transform: scale(1.1);
+  }
+
+  .button_age:hover {
+    transform: scale(1.1);
   }
 
   @media screen and (max-width: 930px) {
